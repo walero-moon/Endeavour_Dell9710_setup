@@ -1,0 +1,43 @@
+#!/usr/bin/bash
+
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+BOLD_CYAN='\033[1;36m'
+
+echo -e "${BOLD_CYAN}Updating system\n${NC}"
+sudo pacman -Syu --noprogressbar --noconfirm --color always
+cd ~
+
+# Install vim and sed
+echo -e "${BOLD_CYAN}Installing vim, sed, and git\n${NC}"
+sudo pacman -Syu --noprogressbar --noconfirm --color always vim sed git
+
+# Make directory used for setup
+echo -e "\n${BOLD_CYAN}Making new directory '/home/$USER/.fsetup'${NC}"
+mkdir ~/.fsetup
+cd ~/.fsetup
+
+# Configure for dual booting
+# Install os-prober
+echo -e "\n${BOLD_CYAN}Installing os-prober${NC}"
+sudo pacman -S --needed --noprogressbar os-prober
+# Enable os prober
+echo -e "${BOLD_CYAN}Enabling os-prober\n${NC}"
+sudo sed -i.bak "s/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=true/" /etc/default/grub
+
+# Install Kernel 5.15.rc3-1, needed to fix audio and wifi issues
+echo -e "\n${BOLD_CYAN}Cloning kernel 5.15.rc3 from https://aur.archlinux.org/linux-mainline.git${NC}"
+git clone https://aur.archlinux.org/linux-mainline.git
+cd linux-mainline
+echo -e "\n${BOLD_CYAN}Building package and installing. This will take a while...\n${NC}"
+makepkg -sri --noconfirm
+
+# Refresh Grub
+echo -e "\n${BOLD_CYAN}Refreshing grub...\n${NC}"
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+# Ask to reboot
+echo -e "${BOLD_CYAN}The computer needs to reboot to apply kernel changes.${NC}"
+echo -e "${BOLD_CYAN}Rebooting in 5 seconds...${NC}"
+sleep 5
+sudo reboot now
