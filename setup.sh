@@ -10,7 +10,7 @@ MIFFE_URL='http://arch.miffe.org/$arch/'
 if [ -f ~/.fsetup/done3  ]; then
 	echo "Completed initial setup. Cleaning files..."
     # Delete auto execute script
-    rm -rf ~/.config/setup.sh.desktop
+    rm -rf ~/.config/autostart/setup.sh.desktop
     rm -rf ~/.fsetup
 elif [ -f ~/.fsetup/done2 ]; then
 	echo "This is the last iteration!"
