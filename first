@@ -6,6 +6,7 @@ BOLD_CYAN='\033[1;36m'
 
 echo -e "${BOLD_CYAN}Updating system\n${NC}"
 sudo pacman -Syu --noprogressbar --noconfirm --color always
+sudo pacman -S base-devel --noconfirm --noprogressbar
 cd ~
 
 # Install vim and sed
