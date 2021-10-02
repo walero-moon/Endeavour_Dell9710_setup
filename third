@@ -12,3 +12,5 @@ sudo pacman -Syu bluedevil
 yay -S touchegg
 yay -S touche
 cp -rf ./touchegg.conf ~/.config/touchegg/
+
+sudo rm -rf ~/.fsetup
