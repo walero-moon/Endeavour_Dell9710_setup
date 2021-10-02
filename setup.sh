@@ -8,6 +8,10 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 MIFFE_URL='http://arch.miffe.org/$arch/'
 
 if [ -f ~/.fsetup/done3  ]; then
+    sudo systemctl restart snapd.seeded.service
+    sudo ln -s /var/lib/snapd/snap /snap
+    sudo snap install brave
+    sudo snap install --classic code
 	echo "Completed initial setup. Cleaning files..."
     # Delete auto execute script
     rm -rf ~/.config/autostart/setup.sh.desktop
