@@ -4,13 +4,35 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 BOLD_CYAN='\033[1;36m'
 
-sudo pacman -Syu bluez
-sudo pacman -Syu bluez-utils
+# Bluetooth configuration
+sudo pacman -Syu --noconfirm bluez
+sudo pacman -Syu --noconfirm bluez-utils
 sudo systemctl enable bluetooth.service
-sudo pacman -Syu bluedevil
+sudo pacman -Syu --noconfirm bluedevil
 
-yay -S touchegg
+cd ~/.fsetup
+# Installing touchegg and the config I like
+git clone https://aur.archlinux.org/touchegg.git
+cd touchegg
+makepkg -sri
+sudo systemctl enable touchegg
+sudo systemctl start touchegg
+touchegg
+cd ..
 yay -S touche
 cp -rf ./touchegg.conf ~/.config/touchegg/
 
+# Virtual Box
+sudo pacman -Syu --noconfirm virtualbox
+
+# Installing snap
+git clone https://aur.archlinux.org/snapd.git
+cd snapd
+makepkg -si --noconfirm
+sudo systemctl enable --now snapd.socket
+
 sudo rm -rf ~/.fsetup
+
+echo -e "${BOLD_CYAN}\nRebooting in 5 seconds...${NC}"
+sleep 5
+sudo reboot now
