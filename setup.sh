@@ -78,6 +78,7 @@ elif [ -f ~/.fsetup/done1 ]; then
 else
     sudo pacman-key --recv-keys 313F5ABD
     sudo pacman-key --lsign-key 313F5ABD
+        sed -i.bak "s/^Exec=.*/Exec=${SCRIPT_DIR}/" ~/setup.sh.desktop
     cp ./setup.sh.desktop ~/.config/
     sed -i.bak "s/^Exec=.*/Exec=${SCRIPT_DIR}/" ~/.config/setup.sh.desktop
     sudo pacman -Syu --noprogressbar --noconfirm vim
@@ -106,7 +107,7 @@ else
     # Configure for dual booting
     # Install os-prober
     echo -e "\n${BOLD_CYAN}Installing os-prober${NC}"
-    sudo pacman -S --needed --noprogressbar os-prober
+    sudo pacman -S --needed --noconfirm --noprogressbar os-prober
     # Enable os prober
     echo -e "${BOLD_CYAN}Enabling os-prober\n${NC}"
     sudo sed -i.bak "s/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/" /etc/default/grub
