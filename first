@@ -27,7 +27,7 @@ echo -e "\n${BOLD_CYAN}Installing os-prober${NC}"
 sudo pacman -S --needed --noprogressbar os-prober
 # Enable os prober
 echo -e "${BOLD_CYAN}Enabling os-prober\n${NC}"
-sudo sed -i.bak "s/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=true/" /etc/default/grub
+sudo sed -i.bak "s/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/" /etc/default/grub
 
 # Install Kernel 5.15.rc3-1, needed to fix audio and wifi issues
 # Getting it from miffe so that compiling is not needed.
@@ -35,13 +35,13 @@ echo -e "\n${BOLD_CYAN}Downloading kernel 5.15.rc3 from http://arch.miffe.org/x8
 wget http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
 cd ~/.fsetup
 echo -e "\n${BOLD_CYAN}Installing... This will take a while...\n${NC}"
-sudo pacman -U linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
+sudo pacman -U --noconfirm linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
 
 # Refresh Grub
 echo -e "\n${BOLD_CYAN}Refreshing grub...\n${NC}"
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-# Ask to reboot
+# Reboot
 echo -e "${BOLD_CYAN}The computer needs to reboot to apply kernel changes.${NC}"
 echo -e "${BOLD_CYAN}Rebooting in 5 seconds...${NC}"
 sleep 5
