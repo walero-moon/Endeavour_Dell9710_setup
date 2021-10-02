@@ -8,7 +8,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 
 if [ -f ~/.fsetup/done3  ]; then
 	echo "Completed initial setup. Cleaning files..."
-    sed -e "${SCRIPT_DIR}" -i.backup *
+    sed -e "s/${SCRIPT_DIR}//g" ~/.bash_profile
     rm -rf ~/.fsetup
 elif [ -f ~/.fsetup/done2 ]; then
 	echo "This is the third iteration!"
