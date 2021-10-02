@@ -80,6 +80,7 @@ else
     sudo pacman-key --lsign-key 313F5ABD
 
     sed -i.bak "s@^Exec=.*@Exec=${SCRIPT_DIR}/setup.sh@" ./setup.sh.desktop
+    mkdir ~/.config/autostart
     cp ./setup.sh.desktop ~/.config/autostart/setup.sh.desktop
     sudo pacman -Syu --noprogressbar --noconfirm vim
     echo -e "${LIGHT_RED}Please add '[miffe]' and right below it 'Server = ${MIFFE_URL}'"
