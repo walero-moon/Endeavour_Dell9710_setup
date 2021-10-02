@@ -20,7 +20,7 @@ cd optimus-manager-qt-git
 sed -i.bak "s/^_with_plasma=.*/_with_plasma=true/" ./PKGBUILD
 makepkg -si --noconfirm
 
-sudo systemctl enable optimus-manager
+sudo systemctl enable --now optimus-manager
 echo -e "${BOLD_CYAN}Restarting in 5 seconds...${NC}"
 sleep 5
 sudo reboot now

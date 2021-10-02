@@ -5,26 +5,26 @@ NC='\033[0m' # No Color
 BOLD_CYAN='\033[1;36m'
 
 # Bluetooth configuration
-sudo pacman -Syu --noconfirm bluez
-sudo pacman -Syu --noconfirm bluez-utils
+sudo pacman -S --noconfirm bluez
+sudo pacman -S --noconfirm bluez-utils
 sudo systemctl enable bluetooth.service
-sudo pacman -Syu --noconfirm bluedevil
+sudo pacman -S --noconfirm bluedevil
 
 cd ~/.fsetup
 # Installing touchegg and the config I like
-git clone https://aur.archlinux.org/touchegg.git
+git clone --quiet https://aur.archlinux.org/touchegg.git
 cd touchegg
 makepkg -sri --noconfirm
 sudo systemctl enable touchegg
 sudo systemctl start touchegg
 touchegg
 cd ..
-yay -S touche
+yay -S --noconfirm --answerdiff=None touche
 mkdir ~/.config/touchegg
 cp ./touchegg.conf ~/.config/touchegg/
 
 # Virtual Box
-sudo pacman -S virtualbox virtualbox-guest-iso
+sudo pacman -S --noconfirm virtualbox virtualbox-guest-iso
 sudo pacman -S --noconfirm net-tools
 sudo pacman -S --noconfirm virtualbox-ext-vnc
 sudo modprobe vboxdrv
@@ -32,7 +32,7 @@ sudo gpasswd -a $USER vboxusers
 sudo pacman -S --noconfirm virtualbox-etx-oracle
 
 # Installing snap
-git clone https://aur.archlinux.org/snapd.git
+git clone --quiet https://aur.archlinux.org/snapd.git
 cd snapd
 makepkg -si --noconfirm
 sudo systemctl enable --now snapd.socket

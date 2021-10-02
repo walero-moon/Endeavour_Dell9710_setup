@@ -14,7 +14,7 @@ cd ~
 
 # Install vim and sed
 echo -e "${BOLD_CYAN}Installing vim, sed, and git\n${NC}"
-sudo pacman -Syu --noprogressbar --noconfirm --color always vim sed git
+sudo pacman -S --noprogressbar --noconfirm --color always vim sed git
 
 # Make directory used for setup
 echo -e "\n${BOLD_CYAN}Making new directory '/home/$USER/.fsetup'${NC}"
