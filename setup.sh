@@ -8,10 +8,11 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 
 if [ -f ~/.fsetup/done3  ]; then
 	echo "Completed initial setup. Cleaning files..."
-    sed -e "s/${SCRIPT_DIR}//g" ~/.bash_profile
+    # Delete auto execute script
+    rm -rf ~/.config/setup.sh.desktop
     rm -rf ~/.fsetup
 elif [ -f ~/.fsetup/done2 ]; then
-	echo "This is the third iteration!"
+	echo "This is the last iteration!"
     # Bluetooth configuration
     sudo pacman -S --noconfirm bluez
     sudo pacman -S --noconfirm bluez-utils
@@ -74,14 +75,17 @@ elif [ -f ~/.fsetup/done1 ]; then
 	touch ~/.fsetup/done2
     sudo reboot now
 else
-    echo ${SCRIPT_DIR} >> ~/.bash_profile
+    sudo pacman-key --recv-keys 313F5ABD
+    sudo pacman-key --lsign-key 313F5ABD
+    cp ./setup.sh.desktop ~/.config/
+    sed -i.bak "s/^Exec=.*/Exec=${SCRIPT_DIR}/" ~/.config/setup.sh.desktop
     sudo pacman -Syu --noprogressbar --noconfirm vim
     echo -e "${LIGHT_RED}Please add '[miffe]' and right below it 'Server = http://arch.miffe.org/$arch/'"
     echo -e "${LIGHT_RED}to the end of the '/etc/pacman.conf' file.${NC}"
+    sleep 10
     sudo vim /etc/pacman.conf    
     mkdir ~/.fsetup
-    sudo pacman-key --recv-keys 313F5ABD
-    sudo pacman-key --lsign-key 313F5ABD
+    sudo pacman -Sy
 
 
     echo -e "${BOLD_CYAN}Updating system\n${NC}"
