@@ -8,6 +8,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 
 if [ -f ~/.fsetup/done3  ]; then
 	echo "Completed initial setup. Cleaning files..."
+    sed -e "${SCRIPT_DIR}" -i.backup *
     rm -rf ~/.fsetup
 elif [ -f ~/.fsetup/done2 ]; then
 	echo "This is the third iteration!"
@@ -74,7 +75,7 @@ elif [ -f ~/.fsetup/done1 ]; then
     sudo reboot now
 else
     echo ${SCRIPT_DIR} >> ~/.bash_profile
-    sudo pacman -S --noprogressbar --noconfirm vim
+    sudo pacman -Syu --noprogressbar --noconfirm vim
     echo -e "${LIGHT_RED}Please add '[miffe]' and right below it 'Server = http://arch.miffe.org/$arch/'"
     echo -e "${LIGHT_RED}to the end of the '/etc/pacman.conf' file.${NC}"
     sudo vim /etc/pacman.conf    
