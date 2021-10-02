@@ -32,7 +32,7 @@ sudo sed -i.bak "s/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=true/" /etc
 # Install Kernel 5.15.rc3-1, needed to fix audio and wifi issues
 # Getting it from miffe so that compiling is not needed.
 echo -e "\n${BOLD_CYAN}Downloading kernel 5.15.rc3 from http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst${NC}"
-wget http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst -o ~/.fsetup
+wget http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
 cd ~/.fsetup
 echo -e "\n${BOLD_CYAN}Installing... This will take a while...\n${NC}"
 sudo pacman -U linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
