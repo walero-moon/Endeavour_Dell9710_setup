@@ -12,6 +12,8 @@ if [ -f ~/.fsetup/done3  ]; then
     # Delete auto execute script
     rm -rf ~/.config/autostart/setup.sh.desktop
     rm -rf ~/.fsetup
+    echo "Setup completed. You can start using your computer now!"
+    sleep 20
 elif [ -f ~/.fsetup/done2 ]; then
 	echo "This is the last iteration!"
     # Bluetooth configuration
