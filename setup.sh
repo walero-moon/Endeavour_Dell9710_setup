@@ -78,7 +78,7 @@ elif [ -f ~/.fsetup/done1 ]; then
 else
     sudo pacman-key --recv-keys 313F5ABD
     sudo pacman-key --lsign-key 313F5ABD
-        sed -i.bak "s/^Exec=.*/Exec=${SCRIPT_DIR}/" ~/setup.sh.desktop
+    sed -i.bak "s@^Exec=.*@Exec=${SCRIPT_DIR}/setup.sh@" ./setup.sh.desktop
     cp ./setup.sh.desktop ~/.config/
     sed -i.bak "s/^Exec=.*/Exec=${SCRIPT_DIR}/" ~/.config/setup.sh.desktop
     sudo pacman -Syu --noprogressbar --noconfirm vim
