@@ -27,7 +27,6 @@ elif [ -f ~/.fsetup/done2 ]; then
     makepkg -sri --noconfirm
     sudo systemctl enable touchegg
     sudo systemctl start touchegg
-    touchegg
     cd ..
     yay -S --noconfirm --answerdiff=None touche
     mkdir ~/.config/touchegg
