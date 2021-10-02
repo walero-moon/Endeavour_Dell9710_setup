@@ -14,16 +14,22 @@ cd ~/.fsetup
 # Installing touchegg and the config I like
 git clone https://aur.archlinux.org/touchegg.git
 cd touchegg
-makepkg -sri
+makepkg -sri --noconfirm
 sudo systemctl enable touchegg
 sudo systemctl start touchegg
 touchegg
 cd ..
 yay -S touche
-cp -rf ./touchegg.conf ~/.config/touchegg/
+mkdir ~/.config/touchegg
+cp ./touchegg.conf ~/.config/touchegg/
 
 # Virtual Box
-sudo pacman -Syu --noconfirm virtualbox
+sudo pacman -S virtualbox virtualbox-guest-iso
+sudo pacman -S --noconfirm net-tools
+sudo pacman -S --noconfirm virtualbox-ext-vnc
+sudo modprobe vboxdrv
+sudo gpasswd -a $USER vboxusers
+sudo pacman -S --noconfirm virtualbox-etx-oracle
 
 # Installing snap
 git clone https://aur.archlinux.org/snapd.git
