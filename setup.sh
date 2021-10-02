@@ -5,6 +5,7 @@ NC='\033[0m' # No Color
 BOLD_CYAN='\033[1;36m'
 LIGHT_RED='\033[1;91m'
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+MIFFE_URL='http://arch.miffe.org/$arch/'
 
 if [ -f ~/.fsetup/done3  ]; then
 	echo "Completed initial setup. Cleaning files..."
@@ -80,8 +81,9 @@ else
     cp ./setup.sh.desktop ~/.config/
     sed -i.bak "s/^Exec=.*/Exec=${SCRIPT_DIR}/" ~/.config/setup.sh.desktop
     sudo pacman -Syu --noprogressbar --noconfirm vim
-    echo -e "${LIGHT_RED}Please add '[miffe]' and right below it 'Server = http://arch.miffe.org/$arch/'"
+    echo -e "${LIGHT_RED}Please add '[miffe]' and right below it 'Server = ${MIFFE_URL}'"
     echo -e "${LIGHT_RED}to the end of the '/etc/pacman.conf' file.${NC}"
+    echo -e "${LIGHT_RED}Vim opening in 10 seconds...${NC}"
     sleep 10
     sudo vim /etc/pacman.conf    
     mkdir ~/.fsetup
