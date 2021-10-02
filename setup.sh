@@ -48,8 +48,6 @@ elif [ -f ~/.fsetup/done2 ]; then
     makepkg -si --noconfirm
     sudo systemctl enable --now snapd.socket
 
-    sudo rm -rf ~/.fsetup
-
     echo -e "${BOLD_CYAN}\nRebooting in 5 seconds...${NC}"
     sleep 5
 	touch ~/.fsetup/done3
