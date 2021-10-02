@@ -97,8 +97,8 @@ else
     cd ~
 
     # Install vim and sed
-    echo -e "${BOLD_CYAN}Installing sed, and git\n${NC}"
-    sudo pacman -S --noprogressbar --noconfirm --color always vim sed git
+    echo -e "${BOLD_CYAN}Installing sed\n${NC}"
+    sudo pacman -S --noprogressbar --noconfirm --color always vim sed
 
     # Make directory used for setup
     echo -e "\n${BOLD_CYAN}Making new directory '/home/$USER/.fsetup'${NC}"
