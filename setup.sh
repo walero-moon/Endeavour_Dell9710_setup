@@ -12,6 +12,7 @@ if [ -f ~/.fsetup/done3  ]; then
     sudo ln -s /var/lib/snapd/snap /snap
     sudo snap install brave
     sudo snap install --classic code
+    sudo pacman -Syu --noconfirm discord
 	echo "Completed initial setup. Cleaning files..."
     # Delete auto execute script
     rm -rf ~/.config/autostart/setup.sh.desktop
