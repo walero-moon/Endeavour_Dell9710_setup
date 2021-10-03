@@ -7,58 +7,60 @@ LIGHT_RED='\033[1;91m'
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 MIFFE_URL='http://arch.miffe.org/$arch/'
 
-if [ -f ~/.fsetup/done3  ]; then
-    sudo systemctl restart snapd.seeded.service
-    sudo ln -s /var/lib/snapd/snap /snap
-    sudo snap install brave
-    sudo snap install --classic code
-    sudo pacman -Syu --noconfirm discord
-	echo "Completed initial setup. Cleaning files..."
-    # Delete auto execute script
-    rm -rf ~/.config/autostart/setup.sh.desktop
-    rm -rf ~/.fsetup
-    echo "Setup completed. You can start using your computer now!"
-    sleep 20
-elif [ -f ~/.fsetup/done2 ]; then
-	echo "This is the last iteration!"
-    # Bluetooth configuration
-    sudo pacman -S --noconfirm bluez
-    sudo pacman -S --noconfirm bluez-utils
-    sudo systemctl enable bluetooth.service
-    sudo pacman -S --noconfirm bluedevil
+miffe_config () {
+    sudo pacman-key --recv-keys 313F5ABD
+    sudo pacman-key --lsign-key 313F5ABD
 
+    sed -i.bak "s@^Exec=.*@Exec=${SCRIPT_DIR}/setup.sh@" ./setup.sh.desktop
+    mkdir ~/.config/autostart
+    cp ./setup.sh.desktop ~/.config/autostart/setup.sh.desktop
+    sudo pacman -Syu --noprogressbar --noconfirm vim
+    
+    # Add to conf
+    echo -e "${BOLD_CYAN}Adding to '/etc/pacman.conf'${NC}"
+    echo '[miffe]' | sudo tee -a /etc/pacman.conf
+    echo 'Server = http://arch.miffe.org/$arch/' | sudo tee -a /etc/pacman.conf
+
+    mkdir ~/.fsetup
+    sudo pacman -Sy
+}
+
+os_probe () {
+    echo -e "\n${BOLD_CYAN}Installing os-prober${NC}"
+    sudo pacman -S --needed --noconfirm --noprogressbar os-prober
+    # Enable os prober
+    echo -e "${BOLD_CYAN}Enabling os-prober\n${NC}"
+    sudo sed -i.bak "s/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/" /etc/default/grub
+}
+
+get_mainline () {
+    # Install Kernel 5.15.rc3-1, needed to fix audio and wifi issues
+    # Getting it from miffe so that compiling is not needed.
+    echo -e "\n${BOLD_CYAN}Downloading kernel 5.15.rc3 from http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst${NC}"
     cd ~/.fsetup
-    # Installing touchegg and the config I like
-    git clone --quiet https://aur.archlinux.org/touchegg.git
-    cd touchegg
-    makepkg -sri --noconfirm
-    sudo systemctl enable touchegg
-    sudo systemctl start touchegg
-    cd ${SCRIPT_DIR}
-    yay -S --noconfirm --answerdiff=None touche
-    mkdir ~/.config/touchegg
-    cp ./touchegg.conf ~/.config/touchegg/
+    wget http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
+    echo -e "\n${BOLD_CYAN}Installing... This will take a while...\n${NC}"
+    sudo pacman -U --noconfirm linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
+    wget https://arch.miffe.org/x86_64/linux-mainline-headers-5.15rc3-1-x86_64.pkg.tar.zst
+    sudo pacman -U --noconfirm linux-mainline-headers-5.15rc3-1-x86_64.pkg.tar.zst
+}
 
-    # Virtual Box
-    sudo pacman -S --noconfirm virtualbox virtualbox-guest-iso
-    sudo pacman -S --noconfirm net-tools
-    sudo pacman -S --noconfirm virtualbox-ext-vnc
-    sudo modprobe vboxdrv
-    sudo gpasswd -a $USER vboxusers
-    sudo pacman -S --noconfirm virtualbox-etx-oracle
+performance_fix () {
+    sudo rmmod intel_rapl_msr
+    sudo rmmod processor_thermal_device_pci_legacy
+    sudo rmmod processor_thermal_device
+    sudo rmmod processor_thermal_rapl
+    sudo rmmod intel_rapl_common
+    sudo rmmod intel_powerclamp
+    sudo modprobe intel_powerclamp
+    sudo modprobe intel_rapl_common
+    sudo modprobe processor_thermal_rapl
+    sudo modprobe processor_thermal_device
+    sudo modprobe intel_rapl_msr
+    sudo pacman -Syu --noconfirm libsmbios
+}
 
-    # Installing snap
-    git clone --quiet https://aur.archlinux.org/snapd.git
-    cd snapd
-    makepkg -si --noconfirm
-    sudo systemctl enable --now snapd.socket
-
-    echo -e "${BOLD_CYAN}\nRebooting in 5 seconds...${NC}"
-    sleep 5
-	touch ~/.fsetup/done3
-    sudo reboot now
-elif [ -f ~/.fsetup/done1 ]; then
-	# Do this after first reboot
+optimus_setup () {
     # Optimus manager for Nvidia Graphics
     echo -e "${BOLD_CYAN}Installing optimus-manager for Nvidia${NC}"
     cd ~/.fsetup
@@ -75,27 +77,105 @@ elif [ -f ~/.fsetup/done1 ]; then
     makepkg -si --noconfirm
 
     sudo systemctl enable --now optimus-manager
+}
+
+bluetooth_config () {
+    sudo pacman -S --noconfirm bluez
+    sudo pacman -S --noconfirm bluez-utils
+    sudo systemctl enable bluetooth.service
+    sudo pacman -S --noconfirm bluedevil
+}
+
+# Installing touchegg and the config
+gestures_setup () {
+    git clone --quiet https://aur.archlinux.org/touchegg.git
+    cd touchegg
+    makepkg -sri --noconfirm
+    sudo systemctl enable touchegg
+    sudo systemctl start touchegg
+    cd ${SCRIPT_DIR}
+    yay -S --noconfirm --answerdiff=None touche
+    mkdir ~/.config/touchegg
+    cp ./touchegg.conf ~/.config/touchegg/
+}
+
+# VirtualBox setup
+vbox_setup () {
+    sudo pacman -S --noconfirm virtualbox virtualbox-guest-iso
+    sudo pacman -S --noconfirm net-tools
+    sudo pacman -S --noconfirm virtualbox-ext-vnc
+    sudo modprobe vboxdrv
+    sudo gpasswd -a $USER vboxusers
+    sudo pacman -S --noconfirm virtualbox-ext-oracle
+}
+
+snap_setup () {
+    # Installing snap
+    git clone --quiet https://aur.archlinux.org/snapd.git
+    cd snapd
+    makepkg -si --noconfirm
+    sudo systemctl enable --now snapd.socket
+    # Prevent snap error
+    sudo systemctl restart snapd.seeded.service
+    sudo ln -s /var/lib/snapd/snap /snap
+}
+
+# Installs all applications that don't need a restart and that I usually use.
+application_install () {
+    echo -e "${BOLD_CYAN}Installing brave, telegram, visual studio code, discord, spotify, flameshot, peek${NC}"
+    sudo snap install brave
+    sudo snap install --classic code
+    sudo snap install telegram-desktop
+    sudo snap install spotify
+    sudo pacman -Syu --noconfirm discord flameshot peek
+}
+
+# Cleans up the files used for the script.
+cleanup_install () {
+    rm -rf ~/.config/autostart/setup.sh.desktop
+    rm -rf ~/.fsetup
+}
+
+
+if [ -f ~/.fsetup/done3  ]; then
+    application_install
+
+    # Delete auto execute script
+	echo "Completed initial setup. Cleaning files..."
+    cleanup_install
+    echo "Setup completed. You can start using your computer now!"
+    sleep 20
+elif [ -f ~/.fsetup/done2 ]; then
+	echo "This is the last iteration!"
+
+    bluetooth_config
+
+    cd ~/.fsetup
+    gestures_setup
+
+    vbox_setup
+
+    snap_setup
+
+    echo -e "${BOLD_CYAN}\nRebooting in 5 seconds...${NC}"
+    sleep 5
+	touch ~/.fsetup/done3
+    sudo reboot now
+elif [ -f ~/.fsetup/done1 ]; then
+	# Do this after first reboot
+
+    performance_fix
+
+    optimus_setup
+
     echo -e "${BOLD_CYAN}Restarting in 5 seconds...${NC}"
     sleep 5
 	touch ~/.fsetup/done2
     sudo reboot now
 else
-    sudo pacman-key --recv-keys 313F5ABD
-    sudo pacman-key --lsign-key 313F5ABD
+    miffe_config
 
-    sed -i.bak "s@^Exec=.*@Exec=${SCRIPT_DIR}/setup.sh@" ./setup.sh.desktop
-    mkdir ~/.config/autostart
-    cp ./setup.sh.desktop ~/.config/autostart/setup.sh.desktop
-    sudo pacman -Syu --noprogressbar --noconfirm vim
-    echo -e "${LIGHT_RED}Please add '[miffe]' and right below it 'Server = ${MIFFE_URL}'"
-    echo -e "${LIGHT_RED}to the end of the '/etc/pacman.conf' file.${NC}"
-    echo -e "${LIGHT_RED}Vim opening in 10 seconds...${NC}"
-    sleep 10
-    sudo vim /etc/pacman.conf    
-    mkdir ~/.fsetup
-    sudo pacman -Sy
-
-
+    # Updates system
     echo -e "${BOLD_CYAN}Updating system\n${NC}"
     sudo pacman -Syu --noprogressbar --noconfirm --color always
     sudo pacman -S base-devel --noconfirm --noprogressbar
@@ -109,23 +189,10 @@ else
     echo -e "\n${BOLD_CYAN}Making new directory '/home/$USER/.fsetup'${NC}"
     cd ~/.fsetup
 
-    # Configure for dual booting
-    # Install os-prober
-    echo -e "\n${BOLD_CYAN}Installing os-prober${NC}"
-    sudo pacman -S --needed --noconfirm --noprogressbar os-prober
-    # Enable os prober
-    echo -e "${BOLD_CYAN}Enabling os-prober\n${NC}"
-    sudo sed -i.bak "s/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/" /etc/default/grub
+    # Needed for dual booting
+    os_probe
 
-    # Install Kernel 5.15.rc3-1, needed to fix audio and wifi issues
-    # Getting it from miffe so that compiling is not needed.
-    echo -e "\n${BOLD_CYAN}Downloading kernel 5.15.rc3 from http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst${NC}"
-    cd ~/.fsetup
-    wget http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
-    echo -e "\n${BOLD_CYAN}Installing... This will take a while...\n${NC}"
-    sudo pacman -U --noconfirm linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
-    wget https://arch.miffe.org/x86_64/linux-mainline-headers-5.15rc3-1-x86_64.pkg.tar.zst
-    sudo pacman -U --noconfirm linux-mainline-headers-5.15rc3-1-x86_64.pkg.tar.zst
+    get_mainline
 
     # Refresh Grub
     echo -e "\n${BOLD_CYAN}Refreshing grub...\n${NC}"
