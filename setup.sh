@@ -130,9 +130,26 @@ application_install () {
     sudo pacman -Syu --noconfirm discord flameshot peek solaar
 }
 
-# fingerprint () {
-#     sudo pacman -S --noprogressbar --noconfirm fprintd
-# }
+facial_recognition () {
+    yay -S --noconfirm --answerdiff=None howdy
+    yay -S --noconfirm --answerdiff=None linux-enable-ir-emitter
+
+    echo -e "${BOLD_CYAN}\nEnabling IR Emitters. Please follow prompts.${NC}"
+    sudo linux-enable-ir-emitter configure
+    sudo linux-enable-ir-emitter boot enable
+
+    sudo chmod -R 755 /lib/security/howdy
+
+    cd ${SCRIPT_DIR}
+    sudo rm -f /etc/pam.d/system-login
+    sudo rm -f /etc/pam.d/kde
+    sudo rm -f /usr/lib/security/howdy/config.ini
+    sudo cp ./system-login /etc/pam.d/system-login
+    sudo cp ./kde_howdy /etc/pam.d/kde
+    sudo cp ./config.ini /usr/lib/security/howdy/config.ini
+
+    echo -e "${BOLD_CYAN}\nPlease follow the prompts to add your face.${NC}"
+}
 
 # Cleans up the files used for the script.
 cleanup_install () {
