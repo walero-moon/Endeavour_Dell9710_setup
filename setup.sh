@@ -122,12 +122,12 @@ snap_setup () {
 
 # Installs all applications that don't need a restart and that I usually use.
 application_install () {
-    echo -e "${BOLD_CYAN}Installing brave, telegram, visual studio code, discord, spotify, flameshot, peek, solaar${NC}"
+    echo -e "${BOLD_CYAN}Installing brave, telegram, visual studio code, discord, spotify, flameshot, peek, solaar, KDE discover${NC}"
     sudo snap install brave
     sudo snap install --classic code
     sudo snap install telegram-desktop
     sudo snap install spotify
-    sudo pacman -Syu --noconfirm discord flameshot peek solaar
+    sudo pacman -Syu --noconfirm discord flameshot peek solaar discover
 }
 
 facial_recognition () {
