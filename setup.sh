@@ -111,6 +111,7 @@ vbox_setup () {
 
 snap_setup () {
     # Installing snap
+    cd ~/.fsetup
     git clone --quiet https://aur.archlinux.org/snapd.git
     cd snapd
     makepkg -si --noconfirm
@@ -128,6 +129,14 @@ application_install () {
     sudo snap install telegram-desktop
     sudo snap install spotify
     sudo pacman -Syu --noconfirm discord flameshot peek solaar discover
+
+    # Get better discord
+    cd ~./fsetup
+    wget https://github.com/BetterDiscord/Installer/releases/latest/download/BetterDiscord-Linux.AppImage
+    sudo chmod +x BetterDiscord-Linux.AppImage
+    ./BetterDiscord-Linux.AppImage
+    # Install plugins
+    cp -rf ./plugins/ ~/.config/BetterDiscord/
 }
 
 facial_recognition () {
