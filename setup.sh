@@ -149,6 +149,7 @@ facial_recognition () {
     sudo cp ./config.ini /usr/lib/security/howdy/config.ini
 
     echo -e "${BOLD_CYAN}\nPlease follow the prompts to add your face.${NC}"
+    sudo howdy add
 }
 
 # Cleans up the files used for the script.
@@ -160,6 +161,7 @@ cleanup_install () {
 
 if [ -f ~/.fsetup/done3  ]; then
     application_install
+    facial_recognition
 
     # Delete auto execute script
 	echo "Completed initial setup. Cleaning files..."
