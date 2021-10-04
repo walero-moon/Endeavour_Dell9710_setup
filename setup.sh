@@ -109,6 +109,30 @@ vbox_setup () {
     sudo pacman -S --noconfirm virtualbox-ext-oracle
 }
 
+notification_badge () {
+    echo -e "${BOLD_CYAN}\nThis will make the notification badges work on chromium applications${NC}"
+    cd ~/.fsetup
+    mkdir vala0.52
+    cd ./vala0.52
+    cp ${SCRIPT_DIR}/PKGBUILD ./PKGBUILD
+
+    echo -e "${BOLD_CYAN}\nPlease pay attention and agree to replace the current vala with vala0.52 when prompted. The default is 'N' so you enter 'y'${NC}"
+    sleep 5
+    makepkg -sri
+
+    echo -e "${BOLD_CYAN}\nInstalled vala version required for dee. Cloning and installing dee...${NC}"
+    cd ~/.fsetup
+    git clone https://aur.archlinux.org/dee.git
+    cd ./dee
+    makepkg -sri --noconfirm
+
+    cd ~/.fsetup
+    echo -e "${BOLD_CYAN}\nNow you have to replace vala 0.52 with 0.44 when prompted. Pay attention and type 'y' when prompted to confirm replacement.${NC}"
+    sleep 5
+    echo -e "${BOLD_CYAN}Installing libunity...${NC}"
+    yay -S libunity
+}
+
 snap_setup () {
     # Installing snap
     cd ~/.fsetup
@@ -186,7 +210,7 @@ elif [ -f ~/.fsetup/done2 ]; then
     gestures_setup
 
     vbox_setup
-
+    notification_badge
     snap_setup
 
     echo -e "${BOLD_CYAN}\nRebooting in 5 seconds...${NC}"
