@@ -231,7 +231,7 @@ else
 
     # Updates system
     echo -e "${BOLD_CYAN}Updating system\n${NC}"
-    sudo pacman -Syu --noprogressbar --noconfirm --needec --color always
+    sudo pacman -Syu --noprogressbar --noconfirm --needed --color always
     sudo pacman -S base-devel --noconfirm --noprogressbar
     cd ~
 
