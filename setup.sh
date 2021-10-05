@@ -57,7 +57,7 @@ performance_fix () {
     sudo modprobe processor_thermal_rapl
     sudo modprobe processor_thermal_device
     sudo modprobe intel_rapl_msr
-    sudo pacman -Syu --noconfirm libsmbios
+    sudo pacman -Syu --noconfirm --noprogressbar libsmbios
 }
 
 optimus_setup () {
@@ -101,12 +101,12 @@ gestures_setup () {
 
 # VirtualBox setup
 vbox_setup () {
-    sudo pacman -S --noconfirm virtualbox virtualbox-guest-iso
-    sudo pacman -S --noconfirm net-tools
-    sudo pacman -S --noconfirm virtualbox-ext-vnc
+    sudo pacman -S --noconfirm --noprogressbar virtualbox virtualbox-guest-iso
+    sudo pacman -S --noconfirm --noprogressbar net-tools
+    sudo pacman -S --noconfirm --noprogressbar virtualbox-ext-vnc
     sudo modprobe vboxdrv
     sudo gpasswd -a $USER vboxusers
-    sudo pacman -S --noconfirm virtualbox-ext-oracle
+    sudo pacman -S --noconfirm --noprogressbar virtualbox-ext-oracle
 }
 
 notification_badge () {
@@ -116,15 +116,13 @@ notification_badge () {
     cd ./vala0.52
     cp ${SCRIPT_DIR}/PKGBUILD ./PKGBUILD
 
-    echo -e "${BOLD_CYAN}\nPlease pay attention and agree to replace the current vala with vala0.52 when prompted. The default is 'N' so you enter 'y'${NC}"
-    sleep 5
-    makepkg -sri
+    makepkg -sri --noconfirm --noprogressbar
 
     echo -e "${BOLD_CYAN}\nInstalled vala version required for dee. Cloning and installing dee...${NC}"
     cd ~/.fsetup
-    git clone https://aur.archlinux.org/dee.git
+    git clone --quiet https://aur.archlinux.org/dee.git
     cd ./dee
-    makepkg -sri --noconfirm
+    makepkg -sri --noconfirm --noprogressbar
 
     cd ~/.fsetup
     echo -e "${BOLD_CYAN}\nNow you have to replace vala 0.52 with 0.44 when prompted. Pay attention and type 'y' when prompted to confirm replacement.${NC}"
@@ -138,7 +136,7 @@ snap_setup () {
     cd ~/.fsetup
     git clone --quiet https://aur.archlinux.org/snapd.git
     cd snapd
-    makepkg -si --noconfirm
+    makepkg -si --noconfirm --noprogressbar
     sudo systemctl enable --now snapd.socket
     # Prevent snap error
     sudo systemctl restart snapd.seeded.service
@@ -152,7 +150,7 @@ application_install () {
     sudo snap install --classic code
     sudo snap install telegram-desktop
     sudo snap install spotify
-    sudo pacman -Syu --noconfirm discord flameshot peek solaar discover
+    sudo pacman -Syu --noconfirm --noprogressbar discord flameshot peek solaar discover
 
     # Get better discord
     cd ~./fsetup
@@ -160,7 +158,16 @@ application_install () {
     sudo chmod +x BetterDiscord-Linux.AppImage
     ./BetterDiscord-Linux.AppImage
     # Install plugins
+    cd ${SCRIPT_DIR}
     cp -rf ./plugins/ ~/.config/BetterDiscord/
+}
+
+# Installs gaming required stuff
+gaming () {
+    sudo pacman -S --noconfirm --noprogressbar steam wine lutris
+    # Drivers
+    sudo pacman -S --noconfirm --noprogressbar --needed nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings vulkan-icd-loader lib32-vulkan-icd-loader
+    sudo pacman -S --noconfirm --noprogressbar --needed lib32-mesa vulkan-intel lib32-vulkan-intel vulkan-icd-loader lib32-vulkan-icd-loader
 }
 
 facial_recognition () {
@@ -195,6 +202,7 @@ cleanup_install () {
 if [ -f ~/.fsetup/done3  ]; then
     application_install
     facial_recognition
+    gaming
 
     # Delete auto execute script
 	echo "Completed initial setup. Cleaning files..."
