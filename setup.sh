@@ -7,22 +7,14 @@ LIGHT_RED='\033[1;91m'
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 MIFFE_URL='http://arch.miffe.org/$arch/'
 
-miffe_config () {
-    sudo pacman-key --recv-keys 313F5ABD
-    sudo pacman-key --lsign-key 313F5ABD
-
-    sed -i.bak "s@^Exec=.*@Exec=${SCRIPT_DIR}/setup.sh@" ./setup.sh.desktop
-    mkdir ~/.config/autostart
-    cp ./setup.sh.desktop ~/.config/autostart/setup.sh.desktop
-    sudo pacman -Syu --noprogressbar --noconfirm vim
-    
-    # Add to conf
-    echo -e "${BOLD_CYAN}Adding to '/etc/pacman.conf'${NC}"
-    echo '[miffe]' | sudo tee -a /etc/pacman.conf
-    echo 'Server = http://arch.miffe.org/$arch/' | sudo tee -a /etc/pacman.conf
-
-    mkdir ~/.fsetup
-    sudo pacman -Sy
+kernel_fix () {
+    # Fix missing key problem
+    cd ~/.fsetup
+    git clone --quiet https://github.com/wzrdtales/linux-arch-compile
+    gpg --keyserver keys.openpgp.org --recv-keys 19802F8B0D70FC30
+    sudo cp ${SCRIPT_DIR}/makepkg.conf /etc/
+    cd ./linx-arch-compile
+    makepkg -sri --noconfirm
 }
 
 os_probe () {
@@ -31,18 +23,6 @@ os_probe () {
     # Enable os prober
     echo -e "${BOLD_CYAN}Enabling os-prober\n${NC}"
     sudo sed -i.bak "s/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/" /etc/default/grub
-}
-
-get_mainline () {
-    # Install Kernel 5.15.rc3-1, needed to fix audio and wifi issues
-    # Getting it from miffe so that compiling is not needed.
-    echo -e "\n${BOLD_CYAN}Downloading kernel 5.15.rc3 from http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst${NC}"
-    cd ~/.fsetup
-    wget http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
-    echo -e "\n${BOLD_CYAN}Installing... This will take a while...\n${NC}"
-    sudo pacman -U --noconfirm linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst
-    wget https://arch.miffe.org/x86_64/linux-mainline-headers-5.15rc3-1-x86_64.pkg.tar.zst
-    sudo pacman -U --noconfirm linux-mainline-headers-5.15rc3-1-x86_64.pkg.tar.zst
 }
 
 performance_fix () {
@@ -237,7 +217,16 @@ elif [ -f ~/.fsetup/done1 ]; then
 	touch ~/.fsetup/done2
     sudo reboot now
 else
-    miffe_config
+    # Make directory used for setup
+    echo -e "\n${BOLD_CYAN}Making new directory '/home/$USER/.fsetup'${NC}"
+    cd ~/.fsetup
+
+    sudo pacman -Syu --noprogressbar --noconfirm vim sed
+    
+    # Make auto start
+    sed -i.bak "s@^Exec=.*@Exec=${SCRIPT_DIR}/setup.sh@" ./setup.sh.desktop
+    mkdir ~/.config/autostart
+    cp ./setup.sh.desktop ~/.config/autostart/setup.sh.desktop
 
     # Updates system
     echo -e "${BOLD_CYAN}Updating system\n${NC}"
@@ -245,18 +234,10 @@ else
     sudo pacman -S base-devel --noconfirm --noprogressbar
     cd ~
 
-    # Install vim and sed
-    echo -e "${BOLD_CYAN}Installing sed\n${NC}"
-    sudo pacman -S --noprogressbar --noconfirm --color always vim sed
-
-    # Make directory used for setup
-    echo -e "\n${BOLD_CYAN}Making new directory '/home/$USER/.fsetup'${NC}"
-    cd ~/.fsetup
-
     # Needed for dual booting
     os_probe
 
-    get_mainline
+    kernel_fix
 
     # Refresh Grub
     echo -e "\n${BOLD_CYAN}Refreshing grub...\n${NC}"
