@@ -13,7 +13,7 @@ kernel_fix () {
     git clone --quiet https://github.com/wzrdtales/linux-arch-compile
     gpg --keyserver keys.openpgp.org --recv-keys 19802F8B0D70FC30
     sudo cp ${SCRIPT_DIR}/makepkg.conf /etc/
-    cd ./linx-arch-compile
+    cd ./linux-arch-compile
     makepkg -sri --noconfirm
 }
 
@@ -219,9 +219,10 @@ elif [ -f ~/.fsetup/done1 ]; then
 else
     # Make directory used for setup
     echo -e "\n${BOLD_CYAN}Making new directory '/home/$USER/.fsetup'${NC}"
+    mkdir ~/.fsetup
     cd ~/.fsetup
 
-    sudo pacman -Syu --noprogressbar --noconfirm vim sed
+    sudo pacman -Syu --noprogressbar --noconfirm --needed vim sed
     
     # Make auto start
     sed -i.bak "s@^Exec=.*@Exec=${SCRIPT_DIR}/setup.sh@" ./setup.sh.desktop
@@ -230,7 +231,7 @@ else
 
     # Updates system
     echo -e "${BOLD_CYAN}Updating system\n${NC}"
-    sudo pacman -Syu --noprogressbar --noconfirm --color always
+    sudo pacman -Syu --noprogressbar --noconfirm --needec --color always
     sudo pacman -S base-devel --noconfirm --noprogressbar
     cd ~
 
