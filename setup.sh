@@ -7,15 +7,17 @@ LIGHT_RED='\033[1;91m'
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 MIFFE_URL='http://arch.miffe.org/$arch/'
 
-kernel_fix () {
-    # Fix missing key problem
-    cd ~/.fsetup
-    git clone --quiet https://github.com/wzrdtales/linux-arch-compile
-    gpg --keyserver keys.openpgp.org --recv-keys 19802F8B0D70FC30
-    sudo cp ${SCRIPT_DIR}/makepkg.conf /etc/
-    cd ./linux-arch-compile
-    makepkg -sri --noconfirm
-}
+# kernel_fix () {
+#     # Fix missing key problem
+#     cd ~/.fsetup
+#     git clone https://github.com/wzrdtales/linux-arch-compile
+#     gpg --keyserver keys.openpgp.org --recv-keys 19802F8B0D70FC30
+#     cd ./linux-arch-compile
+#     cp ${SCRIPT_DIR}/linux-5.14.8.arch1-1-x86_64.pkg.tar.zst ./
+#     cp ${SCRIPT_DIR}/linux-docs-5.14.8.arch1-1-x86_64.pkg.tar.zst ./
+#     cp ${SCRIPT_DIR}/linux-headers-5.14.8.arch1-1-x86_64.pkg.tar.zst ./
+#     makepkg -sri --noconfirm
+# }
 
 os_probe () {
     echo -e "\n${BOLD_CYAN}Installing os-prober${NC}"
@@ -220,9 +222,8 @@ else
     # Make directory used for setup
     echo -e "\n${BOLD_CYAN}Making new directory '/home/$USER/.fsetup'${NC}"
     mkdir ~/.fsetup
-    cd ~/.fsetup
 
-    sudo pacman -Syu --noprogressbar --noconfirm --needed vim sed
+    sudo pacman -Syu --noprogressbar --noconfirm vim sed
     
     # Make auto start
     sed -i.bak "s@^Exec=.*@Exec=${SCRIPT_DIR}/setup.sh@" ./setup.sh.desktop
@@ -237,8 +238,8 @@ else
 
     # Needed for dual booting
     os_probe
-
-    kernel_fix
+    # sudo cp ${SCRIPT_DIR}/makepkg.conf /etc/
+    # kernel_fix
 
     # Refresh Grub
     echo -e "\n${BOLD_CYAN}Refreshing grub...\n${NC}"
