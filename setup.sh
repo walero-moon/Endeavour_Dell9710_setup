@@ -206,7 +206,7 @@ elif [ -f ~/.fsetup/done2 ]; then
     echo -e "${BOLD_CYAN}\nRebooting in 5 seconds...${NC}"
     sleep 5
 	touch ~/.fsetup/done3
-    sudo reboot now
+    sudo reboot
 elif [ -f ~/.fsetup/done1 ]; then
 	# Do this after first reboot
 
@@ -217,7 +217,7 @@ elif [ -f ~/.fsetup/done1 ]; then
     echo -e "${BOLD_CYAN}Restarting in 5 seconds...${NC}"
     sleep 5
 	touch ~/.fsetup/done2
-    sudo reboot now
+    sudo reboot
 else
     # Make directory used for setup
     echo -e "\n${BOLD_CYAN}Making new directory '/home/$USER/.fsetup'${NC}"
@@ -250,5 +250,5 @@ else
     echo -e "${BOLD_CYAN}Rebooting in 5 seconds...${NC}"
     touch ~/.fsetup/done1
     sleep 5
-    sudo reboot now
+    sudo reboot
 fi
