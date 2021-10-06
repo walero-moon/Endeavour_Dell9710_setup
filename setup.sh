@@ -192,11 +192,9 @@ facial_recognition () {
     cd ${SCRIPT_DIR}
     sudo rm -f /etc/pam.d/system-login
     sudo rm -f /etc/pam.d/kde
-    sudo rm -f /etc/pam.d/sudo
     sudo rm -f /usr/lib/security/howdy/config.ini
     sudo cp ./system-login /etc/pam.d/system-login
     sudo cp ./kde_howdy /etc/pam.d/kde
-    sudo cp ./sudo /etc/pam.d/sudo
     sudo cp ./config.ini /usr/lib/security/howdy/config.ini
 
     echo -e "${BOLD_CYAN}\nPlease follow the prompts to add your face.${NC}"
