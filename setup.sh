@@ -192,14 +192,10 @@ facial_recognition () {
     cd ${SCRIPT_DIR}
     sudo rm -f /etc/pam.d/system-login
     sudo rm -f /etc/pam.d/kde
-    sudo rm -f /etc/pam.d/system-local-login
-    sudo rm -f /etc/pam.d/sddm
     sudo rm -f /etc/pam.d/sudo
     sudo rm -f /usr/lib/security/howdy/config.ini
     sudo cp ./system-login /etc/pam.d/system-login
     sudo cp ./kde_howdy /etc/pam.d/kde
-    sudo cp ./sddm /etc/pam.d/sddm
-    sudo cp ./system-local-login /etc/pam.d/system-local-login
     sudo cp ./sudo /etc/pam.d/sudo
     sudo cp ./config.ini /usr/lib/security/howdy/config.ini
 
