@@ -19,6 +19,37 @@ MIFFE_URL='http://arch.miffe.org/$arch/'
 #     makepkg -sri --noconfirm
 # }
 
+miffe_config () {
+    sudo pacman-key --recv-keys 313F5ABD
+    sudo pacman-key --lsign-key 313F5ABD
+
+    sed -i.bak "s@^Exec=.*@Exec=${SCRIPT_DIR}/setup.sh@" ./setup.sh.desktop
+    mkdir ~/.config/autostart
+    cp ./setup.sh.desktop ~/.config/autostart/setup.sh.desktop
+
+    # Add to conf
+    echo -e "${BOLD_CYAN}Adding to '/etc/pacman.conf'${NC}"
+    echo '[miffe]' | sudo tee -a /etc/pacman.conf
+    echo 'Server = http://arch.miffe.org/$arch/' | sudo tee -a /etc/pacman.conf
+}
+
+get_mainline () {
+    # Install Kernel 5.15.rc3-1, needed to fix audio and wifi issues
+    # Getting it from miffe so that compiling is not needed.
+    echo -e "\n${BOLD_CYAN}Downloading kernel 5.15.rc3 from http://arch.miffe.org/x86_64/linux-mainline-5.15rc3-1-x86_64.pkg.tar.zst${NC}"
+    cd ~/.fsetup
+    echo -e "\n${BOLD_CYAN}Installing... This will take a while...\n${NC}"
+    wget https://arch.miffe.org/x86_64/linux-mainline-5.15rc4-1-x86_64.pkg.tar.zst
+    sudo pacman -U --noconfirm --noprogressbar linux-mainline-5.15rc4-1-x86_64.pkg.tar.zst
+    echo -e "\n${BOLD_CYAN}Installed kernel\n${NC}"
+    wget https://arch.miffe.org/x86_64/linux-mainline-headers-5.15rc4-1-x86_64.pkg.tar.zst
+    sudo pacman -U --noconfirm --noprogressbar linux-mainline-headers-5.15rc4-1-x86_64.pkg.tar.zst
+    echo -e "\n${BOLD_CYAN}Installed headers\n${NC}"
+    wget https://arch.miffe.org/x86_64/linux-mainline-docs-5.15rc4-1-x86_64.pkg.tar.zst
+    sudo pacman -U --noconfirm --noprogressbar linux-mainline-docs-5.15rc4-1-x86_64.pkg.tar.zst
+    echo -e "\n${BOLD_CYAN}Installed docs\n${NC}"
+}
+
 os_probe () {
     echo -e "\n${BOLD_CYAN}Installing os-prober${NC}"
     sudo pacman -S --needed --noconfirm --noprogressbar os-prober
@@ -28,6 +59,7 @@ os_probe () {
 }
 
 performance_fix () {
+    echo -e "\n${BOLD_CYAN}Fixing performance${NC}"
     sudo rmmod intel_rapl_msr
     sudo rmmod processor_thermal_device_pci_legacy
     sudo rmmod processor_thermal_device
@@ -62,6 +94,7 @@ optimus_setup () {
 }
 
 bluetooth_config () {
+    echo -e "\n${BOLD_CYAN}Configuring bluetooth${NC}"
     sudo pacman -S --noconfirm bluez
     sudo pacman -S --noconfirm bluez-utils
     sudo systemctl enable bluetooth.service
@@ -70,6 +103,7 @@ bluetooth_config () {
 
 # Installing touchegg and the config
 gestures_setup () {
+    echo -e "\n${BOLD_CYAN}Installing and configuring gestures${NC}"
     git clone --quiet https://aur.archlinux.org/touchegg.git
     cd touchegg
     makepkg -sri --noconfirm
@@ -83,6 +117,7 @@ gestures_setup () {
 
 # VirtualBox setup
 vbox_setup () {
+    echo -e "\n${BOLD_CYAN}Installing and configuring VBox${NC}"
     sudo pacman -S --noconfirm --noprogressbar virtualbox virtualbox-guest-iso
     sudo pacman -S --noconfirm --noprogressbar net-tools
     sudo pacman -S --noconfirm --noprogressbar virtualbox-ext-vnc
@@ -115,6 +150,7 @@ notification_badge () {
 
 snap_setup () {
     # Installing snap
+    echo -e "\n${BOLD_CYAN}Installing snap${NC}"
     cd ~/.fsetup
     git clone --quiet https://aur.archlinux.org/snapd.git
     cd snapd
@@ -132,16 +168,7 @@ application_install () {
     sudo snap install --classic code
     sudo snap install telegram-desktop
     sudo snap install spotify
-    sudo pacman -Syu --noconfirm --noprogressbar discord flameshot peek solaar discover
-
-    # Get better discord
-    cd ~./fsetup
-    wget https://github.com/BetterDiscord/Installer/releases/latest/download/BetterDiscord-Linux.AppImage
-    sudo chmod +x BetterDiscord-Linux.AppImage
-    ./BetterDiscord-Linux.AppImage
-    # Install plugins
-    cd ${SCRIPT_DIR}
-    cp -rf ./plugins/ ~/.config/BetterDiscord/
+    sudo pacman -Syu --noconfirm --noprogressbar discord flameshot peek solaar discover chromium
 }
 
 # Installs gaming required stuff
@@ -165,9 +192,15 @@ facial_recognition () {
     cd ${SCRIPT_DIR}
     sudo rm -f /etc/pam.d/system-login
     sudo rm -f /etc/pam.d/kde
+    sudo rm -f /etc/pam.d/system-local-login
+    sudo rm -f /etc/pam.d/sddm
+    sudo rm -f /etc/pam.d/sudo
     sudo rm -f /usr/lib/security/howdy/config.ini
     sudo cp ./system-login /etc/pam.d/system-login
     sudo cp ./kde_howdy /etc/pam.d/kde
+    sudo cp ./sddm /etc/pam.d/sddm
+    sudo cp ./system-local-login /etc/pam.d/system-local-login
+    sudo cp ./sudo /etc/pam.d/sudo
     sudo cp ./config.ini /usr/lib/security/howdy/config.ini
 
     echo -e "${BOLD_CYAN}\nPlease follow the prompts to add your face.${NC}"
@@ -236,10 +269,14 @@ else
     sudo pacman -S base-devel --noconfirm --noprogressbar
     cd ~
 
+    # Kernel 5.15
+    miffe_config
+    get_mainline
     # Needed for dual booting
     os_probe
-    # sudo cp ${SCRIPT_DIR}/makepkg.conf /etc/
-    # kernel_fix
+
+    # Give all cores for compiling with makepkg
+    sudo cp ${SCRIPT_DIR}/makepkg.conf /etc/
 
     # Refresh Grub
     echo -e "\n${BOLD_CYAN}Refreshing grub...\n${NC}"
