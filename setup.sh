@@ -52,7 +52,7 @@ get_mainline () {
 
 os_probe () {
     echo -e "\n${BOLD_CYAN}Installing os-prober${NC}"
-    sudo pacman -S --needed --noconfirm --noprogressbar os-prober
+    sudo pacman -Syu --needed --noconfirm --noprogressbar os-prober
     # Enable os prober
     echo -e "${BOLD_CYAN}Enabling os-prober\n${NC}"
     sudo sed -i.bak "s/^GRUB_DISABLE_OS_PROBER=.*/GRUB_DISABLE_OS_PROBER=false/" /etc/default/grub
@@ -95,10 +95,13 @@ optimus_setup () {
 
 bluetooth_config () {
     echo -e "\n${BOLD_CYAN}Configuring bluetooth${NC}"
-    sudo pacman -S --noconfirm bluez
-    sudo pacman -S --noconfirm bluez-utils
+    sudo pacman -Syu --noprogressbar --noconfirm bluez
+    sudo pacman -Syu --noprogressbar --noconfirm bluez-utils
     sudo systemctl enable bluetooth.service
-    sudo pacman -S --noconfirm bluedevil
+    sudo pacman -Syu --noprogressbar --noconfirm bluedevil
+
+    # Fix headphones not connecting
+    sudo pacman -Syu  --noconfirm --noprogressbar pulseaudio-bluetooth
 }
 
 # Installing touchegg and the config
@@ -118,12 +121,12 @@ gestures_setup () {
 # VirtualBox setup
 vbox_setup () {
     echo -e "\n${BOLD_CYAN}Installing and configuring VBox${NC}"
-    sudo pacman -S --noconfirm --noprogressbar virtualbox virtualbox-guest-iso
-    sudo pacman -S --noconfirm --noprogressbar net-tools
-    sudo pacman -S --noconfirm --noprogressbar virtualbox-ext-vnc
+    sudo pacman -Syu --noconfirm --noprogressbar virtualbox virtualbox-guest-iso
+    sudo pacman -Syu --noconfirm --noprogressbar net-tools
+    sudo pacman -Syu --noconfirm --noprogressbar virtualbox-ext-vnc
     sudo modprobe vboxdrv
     sudo gpasswd -a $USER vboxusers
-    sudo pacman -S --noconfirm --noprogressbar virtualbox-ext-oracle
+    sudo pacman -Syu --noconfirm --noprogressbar virtualbox-ext-oracle
 }
 
 notification_badge () {
@@ -173,10 +176,10 @@ application_install () {
 
 # Installs gaming required stuff
 gaming () {
-    sudo pacman -S --noconfirm --noprogressbar steam wine lutris
+    sudo pacman -Syu --noconfirm --noprogressbar steam wine lutris
     # Drivers
-    sudo pacman -S --noconfirm --noprogressbar --needed nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings vulkan-icd-loader lib32-vulkan-icd-loader
-    sudo pacman -S --noconfirm --noprogressbar --needed lib32-mesa vulkan-intel lib32-vulkan-intel vulkan-icd-loader lib32-vulkan-icd-loader
+    sudo pacman -Syu --noconfirm --noprogressbar --needed nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-Syuettings vulkan-icd-loader lib32-vulkan-icd-loader
+    sudo pacman -Syu --noconfirm --noprogressbar --needed lib32-mesa vulkan-intel lib32-vulkan-intel vulkan-icd-loader lib32-vulkan-icd-loader
 }
 
 facial_recognition () {
@@ -261,7 +264,7 @@ else
     # Updates system
     echo -e "${BOLD_CYAN}Updating system\n${NC}"
     sudo pacman -Syu --noprogressbar --noconfirm --needed --color always
-    sudo pacman -S base-devel --noconfirm --noprogressbar
+    sudo pacman -Syu base-devel --noconfirm --noprogressbar
     cd ~
 
     # Kernel 5.15
