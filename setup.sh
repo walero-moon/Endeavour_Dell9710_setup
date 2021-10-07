@@ -83,12 +83,12 @@ optimus_setup () {
     makepkg -si --noconfirm
 
     # Tray
-    echo -e "${BOLD_CYAN}Installing optimus-manager-qt${NC}"
-    cd ..
-    git clone --quiet https://aur.archlinux.org/optimus-manager-qt-git
-    cd optimus-manager-qt-git
-    sed -i.bak "s/^_with_plasma=.*/_with_plasma=true/" ./PKGBUILD
-    makepkg -si --noconfirm
+    # echo -e "${BOLD_CYAN}Installing optimus-manager-qt${NC}"
+    # cd ..
+    # git clone --quiet https://aur.archlinux.org/optimus-manager-qt-git
+    # cd optimus-manager-qt-git
+    # sed -i.bak "s/^_with_plasma=.*/_with_plasma=true/" ./PKGBUILD
+    # makepkg -si --noconfirm
 
     sudo systemctl enable --now optimus-manager
 }
@@ -176,7 +176,7 @@ application_install () {
 
 # Installs gaming required stuff
 gaming () {
-    sudo pacman -Syu --noconfirm --noprogressbar steam wine lutris
+    sudo pacman -Syu --noconfirm --noprogressbar steam wine lutris wine-mono
     # Drivers
     sudo pacman -Syu --noconfirm --noprogressbar --needed nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-Syuettings vulkan-icd-loader lib32-vulkan-icd-loader
     sudo pacman -Syu --noconfirm --noprogressbar --needed lib32-mesa vulkan-intel lib32-vulkan-intel vulkan-icd-loader lib32-vulkan-icd-loader
@@ -214,7 +214,7 @@ cleanup_install () {
 
 if [ -f ~/.fsetup/done3  ]; then
     application_install
-    facial_recognition
+    # facial_recognition
     gaming
 
     # Delete auto execute script
@@ -228,10 +228,10 @@ elif [ -f ~/.fsetup/done2 ]; then
     bluetooth_config
 
     cd ~/.fsetup
-    gestures_setup
+    # gestures_setup
 
     vbox_setup
-    notification_badge
+    # notification_badge
     snap_setup
 
     echo -e "${BOLD_CYAN}\nRebooting in 5 seconds...${NC}"
