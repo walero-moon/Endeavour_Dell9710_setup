@@ -199,6 +199,7 @@ facial_recognition () {
 
     echo -e "${BOLD_CYAN}\nPlease follow the prompts to add your face.${NC}"
     sudo howdy add
+    echo 'Enabled=false' | sudo tee -a ~/.config/kwalletrc
 }
 
 # Cleans up the files used for the script.
